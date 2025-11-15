@@ -4,10 +4,22 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-  "start": "node app.js"
-},
+    "start": "node app.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs"
+  "type": "commonjs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vansh167/Express-Node.JS.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vansh167/Express-Node.JS/issues"
+  },
+  "homepage": "https://github.com/vansh167/Express-Node.JS#readme",
+  "dependencies": {
+    "express": "^5.1.0",
+    "nodemon": "^3.1.11"
+  }
 }
