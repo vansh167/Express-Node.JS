@@ -34,12 +34,6 @@
 //     module.exports ={day}
     
     
-let num = 100;
-if (num%2===0) {
-    console.log("Positive");
-} else {
-    console.log("Negative"); 
-}
-    
+
     
     
