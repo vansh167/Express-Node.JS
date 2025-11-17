@@ -4,6 +4,14 @@
 
 // console.log(fruits [0]); // for access
 
+let text = "Hello World"
+console.log(text.length);  //  fro text length
+console.log(text.slice(0,5)) ; //Hello
+console.log(text.toUpperCase); //HELLO WORLD
+
+
+
+
 
 
 // -------------------------Object---------------------------
