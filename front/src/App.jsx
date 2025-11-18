@@ -1,35 +1,96 @@
-import { useState } from 'react';
-// import reactLogo from './assets/react.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+
+const API = "http://localhost:5000"; // backend URL
 
 function App() {
-  const [form, setForm] = useState("");
-  const [submittedName, setSubmittedName] = useState(""); // Renamed for clarity
+  const [form, setForm] = useState({ name: "", email: "" });
+  const [users, setUsers] = useState([]);
+  const [msg, setMsg] = useState("");
 
-  const handleInputChange = (e) => { // Renamed for clarity
-    setForm(e.target.value);
+  // update form fields
+  const handleChange = (e) => {
+    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault(); // Prevent default form submission
-    setSubmittedName(form); // Update the displayed name
-    setForm(""); // Clear the input field after submission
+  // fetch users from backend
+  const fetchUsers = async () => {
+    try {
+      const res = await fetch(`${API}/users`);
+      const data = await res.json();
+      setUsers(data);
+    } catch (err) {
+      console.error("fetchUsers error", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers(); // run once when component mounts
+  }, []);
+
+  // submit form -> POST to backend
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setMsg("");
+    if (!form.name || !form.email) {
+      setMsg("Please enter name and email");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API}/createUser`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form)
+      });
+
+      if (res.ok) {
+        const saved = await res.json();
+        setUsers(prev => [saved, ...prev]); // show immediately
+        setForm({ name: "", email: "" });
+        setMsg("User added");
+      } else {
+        const err = await res.json();
+        setMsg(err.error || "Failed to add");
+      }
+    } catch (err) {
+      console.error("submit error", err);
+      setMsg("Network error");
+    }
   };
 
   return (
-    <>
-      <div>Friotn + backend </div>
-      <form onSubmit={handleSubmit}>
+    <div style={{ maxWidth: 600, margin: 30 }}>
+      <h2>Add User</h2>
+
+      <form onSubmit={handleSubmit} style={{ marginBottom: 12 }}>
         <input
-          type="text"
-          value={form}
-          placeholder='Enter your name'
-          onChange={handleInputChange}
+          name="name"
+          value={form.name}
+          onChange={handleChange}
+          placeholder="Name"
+          style={{ display: "block", marginBottom: 8, padding: 8, width: "100%" }}
         />
-        <button type="submit">Submit</button> {/* Added type="submit" */}
+        <input
+          name="email"
+          value={form.email}
+          onChange={handleChange}
+          placeholder="Email"
+          style={{ display: "block", marginBottom: 8, padding: 8, width: "100%" }}
+        />
+        <button type="submit" style={{ padding: "8px 16px" }}>Submit</button>
       </form>
-      {submittedName && <p>Your Name: {submittedName}</p>} {/* Conditionally render */}
-    </>
+
+      {msg && <div style={{ marginBottom: 12 }}>{msg}</div>}
+
+      <h3>Saved users</h3>
+      {users.length === 0 ? <p>No users yet</p> : (
+        <ul>
+          {users.map((u, i) => (
+            <li key={i}><strong>{u.name}</strong> — {u.email}</li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
 
